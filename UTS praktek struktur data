@@ -1,0 +1,84 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Struktur untuk menyimpan informasi peminjaman
+struct Loan {
+    double initialAmount;
+    double interestRate;
+    int numberOfMonths;
+};
+
+// Fungsi untuk menghitung total pinjaman
+double calculateTotalLoan(const Loan& loan) {
+    return loan.initialAmount * (1 + loan.interestRate / 100.0);
+}
+
+// Fungsi untuk menghitung cicilan per bulan
+double calculateMonthlyPayment(const Loan& loan) {
+    return calculateTotalLoan(loan) / loan.numberOfMonths;
+}
+
+// Fungsi untuk mencetak rincian peminjaman
+void printLoanDetails(const Loan& loan) {
+    cout << "Initial Amount: Rp." << loan.initialAmount << endl;
+    cout << "Interest Rate: " << loan.interestRate << "%" << endl;
+    cout << "Number of Months: " << loan.numberOfMonths << endl;
+    cout << "Total Loan Amount: Rp." << fixed << setprecision(2) << calculateTotalLoan(loan) << endl;
+    cout << "Monthly Payment: Rp." << fixed << setprecision(2) << calculateMonthlyPayment(loan) << endl;
+}
+
+// Fungsi untuk menambahkan node baru di linked list
+struct Node {
+    Loan loan;
+    Node* next;
+};
+
+void push(Node*& head, const Loan& newLoan) {
+    Node* newNode = new Node;
+    newNode->loan = newLoan;
+    newNode->next = head;
+    head = newNode;
+}
+
+// Fungsi untuk mencetak linked list
+void printLoanHistory(Node* head) {
+    Node* temp = head;
+    while (temp != nullptr) {
+        cout << "\nLoan Details:\n";
+        printLoanDetails(temp->loan);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    const int MAX_LOANS = 3;
+    Node* loanHistory = nullptr;
+
+    // Memasukkan beberapa peminjaman ke dalam linked list
+    for (int i = 0; i < MAX_LOANS; ++i) {
+        Loan newLoan;
+        cout << "Enter Loan Details for Loan " << i + 1 << ":\n";
+        cout << "Initial Amount: Rp.";
+        cin >> newLoan.initialAmount;
+        cout << "Interest Rate (% per annum): ";
+        cin >> newLoan.interestRate;
+        cout << "Number of Months: ";
+        cin >> newLoan.numberOfMonths;
+        push(loanHistory, newLoan);
+    }
+
+    // Mencetak riwayat peminjaman
+    cout << "\nLoan History:\n";
+    printLoanHistory(loanHistory);
+
+    // Membersihkan memori linked list
+    Node* temp;
+    while (loanHistory != nullptr) {
+        temp = loanHistory;
+        loanHistory = loanHistory->next;
+        delete temp;
+    }
+
+    return 0;
+}
